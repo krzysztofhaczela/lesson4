@@ -1,0 +1,101 @@
+{
+  "calls": [
+    {
+      "server": "github_standalone",
+      "tool": "search_issues",
+      "arguments": {
+        "owner": "actions",
+        "repo": "deploy-pages",
+        "query": "Deployment failed, try again later while polling deployment status",
+        "perPage": 10
+      },
+      "status": "success",
+      "evidence": "total_count 5: #406 open 'Intermittent Deploy Failures starting 2026-01-13'; #418 open 'Error: Deployment failed, try again later.'; #372 closed; #166 closed; #163 closed",
+      "urls": [
+        "https://github.com/actions/deploy-pages/issues/418",
+        "https://github.com/actions/deploy-pages/issues/406"
+      ]
+    },
+    {
+      "server": "github_standalone",
+      "tool": "issue_read",
+      "arguments": { "method": "get", "owner": "actions", "repo": "deploy-pages", "issue_number": 418 },
+      "status": "success",
+      "evidence": "Open, 19 comments, 10 +1, created 2026-05-24, updated 2026-07-06, no closing PR. Log: 'Getting Pages deployment status... Error: Deployment failed, try again later.'",
+      "urls": ["https://github.com/actions/deploy-pages/issues/418"]
+    },
+    {
+      "server": "github_standalone",
+      "tool": "issue_read",
+      "arguments": { "method": "get_comments", "owner": "actions", "repo": "deploy-pages", "issue_number": 418, "perPage": 20 },
+      "status": "success",
+      "evidence": "Reports from v4 and v5 and from both Actions and branch sources. Artifact found and deployment created before the failure. Many reports 2026-07-02..07-06. Several resolved by retry or by themselves. Anecdotal workarounds: cancel-in-progress true, PUT /pages to re-apply settings, POST /pages/builds. In-place re-runs can cause a multiple-artifact error. No maintainer response seen.",
+      "urls": ["https://github.com/actions/deploy-pages/issues/418"]
+    },
+    {
+      "server": "github_standalone",
+      "tool": "issue_read",
+      "arguments": { "method": "get", "owner": "actions", "repo": "deploy-pages", "issue_number": 406 },
+      "status": "success",
+      "evidence": "Open, created 2026-01-14, updated 2026-11-06. Polling stuck at 'syncing_files' and then 'Error: Deployment failed, try again later.' Another attempt timed out at 'deployment_queued'.",
+      "urls": ["https://github.com/actions/deploy-pages/issues/406"]
+    },
+    {
+      "server": "github_standalone",
+      "tool": "issue_read",
+      "arguments": { "method": "get_comments", "owner": "actions", "repo": "deploy-pages", "issue_number": 406 },
+      "status": "success",
+      "evidence": "2 comments (2026-08-06): stuck at deployment_queued after a source migration from branch to Actions; a stale locked deployment was cancelled via the API and the next deployment still stayed queued.",
+      "urls": ["https://github.com/actions/deploy-pages/issues/406"]
+    },
+    {
+      "server": "github_standalone",
+      "tool": "search_code",
+      "arguments": { "query": "\"Deployment failed, try again later\" repo:actions/deploy-pages" },
+      "status": "success",
+      "evidence": "src/internal/deployment.js finalErrorStatus maps deployment_failed to 'Deployment failed, try again later.'; deployment_content_failed is a separate artifact error (hard links, symlinks, 10GB limit).",
+      "urls": ["https://github.com/actions/deploy-pages/blob/main/src/internal/deployment.js"]
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "web_search_exa",
+      "arguments": {
+        "query": "GitHub Docs: using custom workflows with GitHub Pages, deploy-pages permissions pages: write id-token: write and github-pages environment",
+        "numResults": 5
+      },
+      "status": "success",
+      "evidence": "docs.github.com custom workflows page: deploy job needs pages: write and id-token: write, needs: build, environment github-pages; artifact must be gzip with a single tar under 10GB and no symlinks or hard links. The deploy-pages README confirms these and the OIDC rationale.",
+      "urls": [
+        "https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages",
+        "https://github.com/actions/deploy-pages?tab=readme-ov-file"
+      ]
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "web_fetch_exa",
+      "arguments": { "urls": ["https://docs.github.com/en/rest/pages/pages#get-the-status-of-a-github-pages-deployment"], "maxCharacters": 6000 },
+      "status": "partial",
+      "evidence": "Truncated before the deployment-status section. Returned the GET /pages schema (build_type, source, status, https_certificate).",
+      "urls": ["https://docs.github.com/en/rest/pages/pages"]
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "web_search_exa",
+      "arguments": {
+        "query": "GitHub Docs troubleshooting GitHub Pages workflow deployment errors and Pages publishing source configuration",
+        "numResults": 4
+      },
+      "status": "success",
+      "evidence": "Configuring a publishing source: branch vs GitHub Actions; branch sites also deploy through an Actions run; GITHUB_TOKEN pushes do not trigger Pages builds; the github-pages environment is created automatically.",
+      "urls": ["https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site"]
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "web_fetch_exa",
+      "arguments": { "urls": ["https://docs.github.com/en/rest/pages/pages#get-the-status-of-a-github-pages-deployment"], "maxCharacters": 30000 },
+      "status": "success",
+      "evidence": "GET /repos/{owner}/{repo}/pages/deployments/{pages_deployment_id} (ID or commit SHA) returns status enum: deployment_in_progress, syncing_files, finished_file_sync, updating_pages, purging_cdn, deployment_cancelled, deployment_failed, deployment_content_failed, deployment_attempt_error, deployment_lost, succeed. Also documents the cancel, builds, and health endpoints.",
+      "urls": ["https://docs.github.com/en/rest/pages/pages"]
+    }
+  ]
+}
