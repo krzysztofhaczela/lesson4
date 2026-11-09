@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-09",
+  "scenario": "Public demonstration; not a user production incident",
+  "calls": [
+    {
+      "tool": "mcp__codex_apps__github_search_issues",
+      "arguments": {
+        "query": "repo:actions/deploy-pages is:issue \"Deployment failed, try again later\"",
+        "topn": 3
+      },
+      "isError": false,
+      "returnedIssues": [
+        {
+          "number": 418,
+          "title": "Error: Deployment failed, try again later.",
+          "url": "https://github.com/actions/deploy-pages/issues/418",
+          "state": null,
+          "summary": "Reporter describes status-polling failure after first successful deployment."
+        },
+        {
+          "number": 406,
+          "title": "Intermittent Deploy Failures starting 2026-01-13",
+          "url": "https://github.com/actions/deploy-pages/issues/406",
+          "state": null,
+          "summary": "Reporter describes intermittent failures after artifact discovery and deployment creation, with syncing_files/deployment_queued states and timeout."
+        },
+        {
+          "number": 317,
+          "title": "GitHub Enterprise Server 3.11.5 compatibility",
+          "url": "https://github.com/actions/deploy-pages/issues/317",
+          "state": null,
+          "summary": "Reporter describes GitHub Enterprise Server 3.11.5 and multiple deploy-pages versions."
+        }
+      ]
+    },
+    {
+      "tool": "mcp__codex_apps__search_service_web_run",
+      "arguments": {
+        "open": [
+          {
+            "ref_id": "https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages"
+          },
+          {
+            "ref_id": "https://github.com/actions/deploy-pages"
+          }
+        ],
+        "response_length": "long"
+      },
+      "isError": false,
+      "summary": "Retrieved GitHub Docs custom workflows and actions/deploy-pages README. Requirements include prior artifact upload, build dependency, pages: write, id-token: write and deployment environment."
+    }
+  ]
+}
