@@ -1,53 +1,108 @@
 {
-  "date": "2026-11-09",
-  "scenario": "Public demonstration; not a user production incident",
   "calls": [
     {
-      "tool": "mcp__codex_apps__github_search_issues",
+      "server": "exa_standalone",
+      "tool": "mcp__exa_standalone__web_search_exa",
       "arguments": {
-        "query": "repo:actions/deploy-pages is:issue \"Deployment failed, try again later\"",
-        "topn": 3
+        "query": "site:developers.openai.com Codex IDE extension MCP config.toml environment",
+        "objective": "Find official OpenAI documentation for VS Code Codex extension MCP configuration and bearer_token_env_var",
+        "numResults": 3
       },
-      "isError": false,
-      "returnedIssues": [
-        {
-          "number": 418,
-          "title": "Error: Deployment failed, try again later.",
-          "url": "https://github.com/actions/deploy-pages/issues/418",
-          "state": null,
-          "summary": "Reporter describes status-polling failure after first successful deployment."
-        },
-        {
-          "number": 406,
-          "title": "Intermittent Deploy Failures starting 2026-01-13",
-          "url": "https://github.com/actions/deploy-pages/issues/406",
-          "state": null,
-          "summary": "Reporter describes intermittent failures after artifact discovery and deployment creation, with syncing_files/deployment_queued states and timeout."
-        },
-        {
-          "number": 317,
-          "title": "GitHub Enterprise Server 3.11.5 compatibility",
-          "url": "https://github.com/actions/deploy-pages/issues/317",
-          "state": null,
-          "summary": "Reporter describes GitHub Enterprise Server 3.11.5 and multiple deploy-pages versions."
-        }
+      "status": "success",
+      "evidence": "Official documentation search returned Docs MCP and stated CLI and IDE extension share configuration.",
+      "failures": []
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "mcp__exa_standalone__web_fetch_exa",
+      "arguments": {
+        "urls": [
+          "https://developers.openai.com/codex/extend/mcp"
+        ],
+        "maxCharacters": 18000
+      },
+      "status": "success",
+      "evidence": "Official MCP documentation confirms shared ~/.codex/config.toml, trusted-project .codex/config.toml, IDE gear menu MCP servers and Restart extension, and bearer_token_env_var authentication.",
+      "failures": []
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "mcp__exa_standalone__web_search_exa",
+      "arguments": {
+        "query": "site:developers.openai.com Codex MCP bearer_token_env_var",
+        "objective": "Find official Codex documentation defining bearer_token_env_var",
+        "numResults": 2
+      },
+      "status": "success",
+      "evidence": "Search for official bearer_token_env_var documentation",
+      "failures": []
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "mcp__exa_standalone__web_fetch_exa",
+      "arguments": {
+        "urls": [
+          "https://developers.openai.com/codex/extend/mcp"
+        ],
+        "maxCharacters": 18000
+      },
+      "status": "success",
+      "evidence": "Fetched official Codex MCP configuration documentation",
+      "failures": []
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "mcp__exa_standalone__web_fetch_exa",
+      "arguments": {
+        "urls": [
+          "https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-codex.md"
+        ],
+        "maxCharacters": 12000
+      },
+      "status": "success",
+      "evidence": "GitHub official Codex installation guide explicitly identifies https://api.githubcopilot.com/mcp/ as the hosted remote MCP endpoint, supporting Streamable HTTP.",
+      "failures": []
+    },
+    {
+      "server": "exa_standalone",
+      "tool": "initialize + tools/list",
+      "arguments": {
+        "endpoint": "https://mcp.exa.ai/mcp",
+        "protocolVersion": "2025-06-18"
+      },
+      "status": "success",
+      "evidence": "serverInfo exa-search-server 3.5.0; tools: web_search_exa, web_fetch_exa. Direct MCP Streamable HTTP probe (JSON-RPC over HTTPS from a shell script), not via a Claude Code session; endpoint and headers match .mcp.json. 2026-11-09.",
+      "failures": [
+        "First urllib attempt returned HTTP 403 with default Python User-Agent; succeeded with a custom User-Agent."
       ]
     },
     {
-      "tool": "mcp__codex_apps__search_service_web_run",
+      "server": "exa_standalone",
+      "tool": "web_search_exa",
       "arguments": {
-        "open": [
-          {
-            "ref_id": "https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages"
-          },
-          {
-            "ref_id": "https://github.com/actions/deploy-pages"
-          }
-        ],
-        "response_length": "long"
+        "query": "Claude Code MCP .mcp.json environment variable expansion headers",
+        "numResults": 3
       },
-      "isError": false,
-      "summary": "Retrieved GitHub Docs custom workflows and actions/deploy-pages README. Requirements include prior artifact upload, build dependency, pages: write, id-token: write and deployment environment."
+      "status": "success",
+      "evidence": "Returned results including https://code.claude.com/docs/en/mcp and https://github.com/anthropics/claude-code/issues/6204. Direct MCP Streamable HTTP probe (JSON-RPC over HTTPS from a shell script), not via a Claude Code session; endpoint and headers match .mcp.json. 2026-11-09.",
+      "failures": []
+    },
+    {
+      "server": "github_standalone",
+      "tool": "initialize",
+      "arguments": {
+        "endpoint": "https://api.githubcopilot.com/mcp/",
+        "headers": {
+          "X-MCP-Readonly": "true",
+          "X-MCP-Toolsets": "issues,repos,actions",
+          "Authorization": "<omitted: GITHUB_PERSONAL_ACCESS_TOKEN not set in environment>"
+        }
+      },
+      "status": "failure",
+      "evidence": "HTTP 401 'bad request: missing required Authorization header'. Endpoint reachable; authenticated connectivity not verified. Direct MCP Streamable HTTP probe (JSON-RPC over HTTPS from a shell script), not via a Claude Code session; endpoint and headers match .mcp.json. 2026-11-09.",
+      "failures": [
+        "GITHUB_PERSONAL_ACCESS_TOKEN absent in the tool environment; no authenticated call possible."
+      ]
     }
   ]
 }

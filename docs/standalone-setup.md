@@ -2,23 +2,34 @@
 
 No Docker is required. Configure two independent hosted MCP endpoints: GitHub for issue and deployment evidence, and Exa for web search and documentation retrieval.
 
-## Configure Codex
+## Configure Claude Code
 
-Merge [config/codex-mcp.toml](../config/codex-mcp.toml) into `~/.codex/config.toml`, preserving unrelated settings. Replace the old GitHub definition and remove `exa_standalone` if present rather than adding duplicate tables.
+Both servers are defined in the project-scoped `.mcp.json`, which Claude Code loads when started in this directory. That file holds your GitHub token, so it is excluded from Git by `.gitignore`. The repository ships a credential-free template, [.mcp.json.example](../.mcp.json.example).
 
-GitHub uses `https://api.githubcopilot.com/mcp/`, with read-only tools and a personal access token supplied through `GITHUB_PERSONAL_ACCESS_TOKEN`. Create a short-lived token with only the read access needed for the repositories being investigated. SSH keys used for Git pushes do not authenticate API requests.
+GitHub uses `https://api.githubcopilot.com/mcp/`, with read-only tools (`X-MCP-Readonly: true`) limited to the `issues`, `repos` and `actions` toolsets, and authenticates with a GitHub personal access token. Create a short-lived token with only the read access needed for the repositories being investigated. SSH keys used for Git pushes do not authenticate API requests.
 
-Enter the token locally in zsh, without echoing it or adding its value to shell history:
+1. Copy the template:
 
-```sh
-read -rs 'GITHUB_PERSONAL_ACCESS_TOKEN?GitHub PAT: '
-printf '\n'
-export GITHUB_PERSONAL_ACCESS_TOKEN
-codex mcp list
-codex
-```
+   ```sh
+   cp .mcp.json.example .mcp.json
+   ```
 
-Launch a fresh Codex CLI session from this terminal in the project directory. An already running desktop app or IDE may not inherit the terminal environment. Never paste the token into chat or commit it.
+2. Open `.mcp.json` and replace `<yourtokenhere>` with your token. Keep the `Bearer ` prefix and the single space, for example `"Authorization": "Bearer github_pat_..."`. A missing prefix or an empty token makes the server reject the connection with `Authorization header is badly formatted`.
+
+3. Confirm the file is ignored before doing anything else with Git:
+
+   ```sh
+   git check-ignore .mcp.json
+   ```
+
+4. Start Claude Code in the project directory:
+
+   ```sh
+   claude mcp list
+   claude
+   ```
+
+On first start Claude Code asks you to approve the project-scoped servers in `.mcp.json`; approve both. Inside a session, `/mcp` shows each server's status and tools. Servers connect only at session start, so restart Claude Code (or the IDE) after editing `.mcp.json`. Never paste the token into chat or commit `.mcp.json`; if the token is exposed, revoke it on GitHub and create a new one.
 
 ## Exa hosted server
 
@@ -32,11 +43,11 @@ After both servers are available, start a fresh session and ask:
 
 > Use only github_standalone and exa_standalone for this test. Investigate GitHub Pages reporting “Deployment failed, try again later” during deployment-status polling. Search existing issues in actions/deploy-pages, retrieve GitHub's custom Pages workflow documentation, and recommend the next action. Record actual tool names, arguments, URLs, returned status and failures. Do not modify external systems or substitute built-in integrations.
 
-Require successful issue search through GitHub and documentation search and retrieval through Exa. A configuration listing alone does not prove runtime connectivity. Preserve the existing evidence as historical built-in test results and record the new test separately. Neither remote server has completed a runtime test in this session.
+In Claude Code the tools appear as `mcp__github_standalone__*` and `mcp__exa_standalone__*`. Require successful issue search through GitHub and documentation search and retrieval through Exa. A configuration listing alone does not prove runtime connectivity. Preserve the existing evidence as historical test results and record the new test separately.
 
 ## Authoritative references
 
-- [GitHub hosted MCP setup for Codex](https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-codex.md)
+- [GitHub hosted MCP setup for Claude](https://github.com/github/github-mcp-server/blob/main/docs/installation-guides/install-claude.md)
 - [GitHub remote read-only headers](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md)
 - [Exa hosted MCP setup](https://exa.ai/mcp)
-- [Codex MCP configuration](https://developers.openai.com/codex/mcp/)
+- [Claude Code MCP configuration](https://code.claude.com/docs/en/mcp)
