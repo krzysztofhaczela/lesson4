@@ -1,8 +1,14 @@
 # MCP-enabled DevOps agent homework
 
-This project contains reusable agent rules, an investigation skill, and evidence from a live two-integration test on 9 November 2026.
+This project contains reusable agent rules, an investigation skill, and a standalone two-server setup. The original evidence is from a built-in integration test on 9 November 2026; it does not prove standalone setup.
 
-## Connections used
+## Standalone servers (required setup)
+
+Follow [the setup guide](docs/standalone-setup.md) for URL-based MCP configuration without Docker. [Codex configuration](config/codex-mcp.toml) connects to GitHub's hosted MCP server using a personal access token from the environment. Exa connects to its hosted MCP URL for search and documentation retrieval; its basic setup requires no API key. Your Git SSH key is separate from API authentication.
+
+Status: GitHub and Exa remote definitions prepared; a fresh two-server runtime test is pending. The evidence below remains historical until the new test succeeds.
+
+## Historical connections used (built-in test only)
 
 | MCP integration exposed to this agent | Discovered tool | Successful use |
 | --- | --- | --- |
@@ -11,7 +17,7 @@ This project contains reusable agent rules, an investigation skill, and evidence
 
 These connections were already supplied by the Codex desktop environment. This work reused and verified them; it did not install two new servers or change account configuration. Their tool namespaces are distinct, although both are managed through the app. No tokens are stored in this project.
 
-`codex mcp list` also ran successfully, with a warning about PATH alias creation. It listed local app/runtime servers, not these app-provided integrations; that listing alone is not evidence of the two connections. The successful calls in `evidence/tool-results.json` are the connection evidence. If the assessor requires two separately configured standalone MCP endpoints, that additional setup and a new-session test remain necessary.
+`codex mcp list` also ran successfully, with a warning about PATH alias creation. It listed local app/runtime servers, not these app-provided integrations; that listing alone is not evidence of the two connections. The successful calls in `evidence/tool-results.json` are the connection evidence. If the assessor requires two separately configured standalone MCP endpoints, the remote definitions are now provided; a new-session runtime test remains necessary.
 
 ## Run the workflow
 
@@ -30,4 +36,4 @@ For your own incident, replace the example with the repository, failing run URL 
 - `evidence/investigation.md`: test goal, tool selection, findings, correlation and next action.
 - `evidence/tool-results.json`: exact investigation arguments and condensed returned evidence, not a verbatim server transcript.
 
-Workflow: natural-language goal → AGENTS.md → investigation skill → GitHub issue search → Search Service documentation retrieval → evidence-based recommendation.
+Workflow: natural-language goal → AGENTS.md → investigation skill → GitHub issue search → Exa documentation search and retrieval → evidence-based recommendation.
